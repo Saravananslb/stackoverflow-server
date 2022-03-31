@@ -2,14 +2,14 @@ const usersModel = require('../Models/users.model');
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
 const saltRound = 10;
-const JWT_SECRET = process.env.JWT_SECRET || 'redbusSecret';
+const JWT_SECRET = process.env.JWT_SECRET || 'stackoverflowSecret';
 
 const { success, failure } = require('../Utils/helper');
 
-const findUserByMobile = async (mobile) => {
+const findUserByEmail = async (email) => {
     try {
         const user = await usersModel.findOne({
-            mobile: mobile
+            email: email
         })
         return user;
     }
@@ -19,14 +19,15 @@ const findUserByMobile = async (mobile) => {
     }
 }
 
-const signUp = async (mobile, password) => {
+const signUp = async (email, password, name) => {
     try {
-        const userCheck = await findUserByMobile(mobile);
+        const userCheck = await findUserByEmail(email);
         if (userCheck) return failure({ exists: true, error: 'user already exists' }, 'user exists, please sign in to continue..')
         const hashPassword = await bcrypt.hash(password, saltRound);
         const userCreate = new usersModel({
-            mobile: mobile,
-            password: hashPassword
+            email: email,
+            password: hashPassword,
+            name: name
         });
         const signInUser = await userCreate.save();
         delete signInUser._doc.password
@@ -38,18 +39,18 @@ const signUp = async (mobile, password) => {
     }
 }
 
-const signIn = async (mobile, password) => {
+const signIn = async (email, password) => {
     try {
-        const user = await findUserByMobile(mobile);
+        const user = await findUserByEmail(email);
     
         if (user) {
             const checkPassword = await bcrypt.compare(password, user.password);
             if (checkPassword) {
                 const authToken = jwt.sign({
-                    mobile: user.mobile,
+                    email: user.email,
                     id: user.id
                 }, JWT_SECRET, { expiresIn: '10hrs' });
-                return success({ authToken: authToken, mobile: user.mobile, id: user.id }, 'user logged in successfully')
+                return success({ authToken: authToken, email: user.email, id: user.id, name: user.name }, 'user logged in successfully')
             }
             return failure({ error: 'wrong password' }, 'incorrect password')
         }
@@ -67,7 +68,7 @@ const checkCookie = async (userId) => {
     
         if (user) {
             const authToken = jwt.sign({
-                mobile: user.mobile,
+                email: user.email,
                 id: user.id
             }, JWT_SECRET, { expiresIn: '10hrs' });
             return success({ authToken: authToken, email: user.email, id: user.id, name: user.name }, 'user logged in successfully')

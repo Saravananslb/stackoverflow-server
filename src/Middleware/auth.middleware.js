@@ -1,5 +1,5 @@
 const jwt = require('jsonwebtoken');
-const JWT_SECRET = process.env.JWT_SECRET || 'redbusSecret';
+const JWT_SECRET = process.env.JWT_SECRET || 'stackoverflowSecret';
 
 const isAuthenticated = (req, res, next) => {
     const authToken = req.headers.authorization;

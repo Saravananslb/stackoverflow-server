@@ -1,11 +1,18 @@
 const { signUp, signIn, checkCookie } = require('../Service/user.service');
 
 const signup = async (req, res) => {
-    const mobile = req.body.mobile;
+    const email = req.body.email;
     const password = req.body.password;
     const name = req.body.name;
 
-    const userCreation = await signUp(mobile, password);
+    if (!email || !password || !name) {
+        res.json({
+            error: 'email or password or name is missing'
+        })
+        return;
+    }
+
+    const userCreation = await signUp(email, password, name);
     res.status(201).json({
         ...userCreation
     })
@@ -13,10 +20,10 @@ const signup = async (req, res) => {
 }
 
 const signin = async (req, res) => {
-    const mobile = req.body.mobile;
+    const email = req.body.email;
     const password = req.body.password;
 
-    const getUser = await signIn(mobile, password);
+    const getUser = await signIn(email, password);
     if (getUser.status) {
         res.cookie('authToken', getUser.authToken, { maxAge: 3600000 });
         res.status(200).json({

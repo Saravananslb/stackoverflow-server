@@ -1,7 +1,7 @@
 const mongoose = require('mongoose');
 require('dot-env');
 
-const CONNECTION_STRING = process.env.CONNECTION_STRING || 'mongodb://localhost:27017/redBus';
+const CONNECTION_STRING = process.env.CONNECTION_STRING || 'mongodb://localhost:27017/stackoverflow';
 const connectdb = () => {
     mongoose.connect(CONNECTION_STRING, (error) => {
     if (error) console.log('error in connecting db', error);

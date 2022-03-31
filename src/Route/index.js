@@ -1,10 +1,10 @@
 const express = require('express');
 const authRouter = require('./auth.route');
-const busRouter = require('./bus.route');
+const busRouter = require('./questions.route');
 
 const app = express();
 
 app.use('/auth', authRouter);
-app.use('/bus', busRouter);
+app.use('/questions', busRouter);
 
 module.exports = app;
